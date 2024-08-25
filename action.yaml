@@ -64,7 +64,7 @@ runs:
         jinja2 \
           -D num_brokers={{ inputs.broker-units }} \
           -D num_zk_servers={{ inputs.zookeeper-units }} \
-          -D user_roles={{ user-roles }} \
+          -D user_roles={{ inputs.user-roles }} \
           ./resources/bundle.yaml.j2 > bundle.yaml
 
         cat bundle.yaml
