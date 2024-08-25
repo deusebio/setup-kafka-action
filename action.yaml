@@ -58,6 +58,7 @@ runs:
       shell: bash
       run: |
         juju run admin/leader get-credentials --format yaml > metadata.yaml
+        cat metadata.yaml
         echo "bootstrap-server=my-test" >> $GITHUB_OUTPUT
         echo "username=$(yq '.username' metadata.yaml)" >> $GITHUB_OUTPUT
         echo "password=$(yq '.password' metadata.yaml)" >> $GITHUB_OUTPUT
