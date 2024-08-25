@@ -48,6 +48,7 @@ runs:
       working-directory: "kafka"
       shell: bash
       run: |
+        juju add-model kafka
         juju deploy ./resources/bundle.yaml
 
     - name: Fetch metadata
