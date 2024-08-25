@@ -8,14 +8,27 @@ applications:
   zookeeper:
     channel: 3/edge
     charm: zookeeper
-    num_units: 3
+    num_units: 1
     revision: 137
     series: jammy
+  admin:
+    channel: latest/stable
+    charm: data-integrator
+    num_units: 1
+    revision: 41
+    series: jammy
+    options:
+      consumer-group-prefix: admin-cg
+      extra-user-roles: admin
+      topic-name: admin-topic
+
 description: A fast, secure and fault-tolerant Apache Kafka, supported by Apache ZooKeeper
 issues: https://github.com/canonical/kafka-bundle/issues/new
 name: kafka-bundle
 relations:
 - - kafka:zookeeper
   - zookeeper:zookeeper
+- - admin:kafka
+  - kafka:kafka-client
 series: jammy
 source: https://github.com/canonical/kafka-bundle

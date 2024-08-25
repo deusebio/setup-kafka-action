@@ -51,10 +51,13 @@ runs:
         juju add-model kafka
         juju deploy ./resources/bundle.yaml
         juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")'
+        juju wait-for application admin --query='name=="admin" && (status=="active" || status=="idle")'
 
     - name: Fetch metadata
       id: get-metadata
       shell: bash
       run: |
-        juju run kafka/leader get-admin-credentials
+        juju run admin/leader get-credentials --format yaml > metadata.yaml
         echo "bootstrap-server=my-test" >> $GITHUB_OUTPUT
+        echo "username=$(yq '.username' metadata.yaml)" >> $GITHUB_OUTPUT
+        echo "password=$(yq '.password' metadata.yaml)" >> $GITHUB_OUTPUT
