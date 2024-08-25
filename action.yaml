@@ -1,0 +1,53 @@
+name: "Charmed Kafka Setup"
+description: "Creates a Kafka deployment for integration testing"
+author: "Canonical"
+
+branding:
+  icon: "alert-circle"
+  color: "purple"
+
+inputs:
+  broker-units:
+    description: Number of Kafka broker to be used
+    default: "1"
+    required: false
+  zookeeper-units:
+    description: Number of ZooKeeper servers to be used
+    default: "1"
+    required: false
+
+outputs:
+  bootstrap-server:
+    description: Address for the bootstrap server to be used
+    value: ${{ steps.get-metadata.outputs.bootstrap-server }}
+
+runs:
+  using: composite
+  steps:
+    - name: 🏗 Checkout Kafka kraft repo
+      uses: actions/checkout@v4
+      with:
+        repository: deusebio/setup-kafka-action
+        path: "kafka"
+
+    - name: Setup operator environment
+      # TODO: Replace with custom image on self-hosted runner
+      uses: charmed-kubernetes/actions-operator@main
+      with:
+        provider: lxd
+        juju-channel: 3.4/stable
+        bootstrap-options: "--agent-version 3.4.2"
+
+    - name: Deploy Kafka
+      id: deploy
+      working-directory: "kafka"
+      shell: bash
+      run: |
+        juju deploy ./resources/bundle.yaml
+
+    - name: Fetch metadata
+      id: get-metadata
+      shell: bash
+      run: |
+        juju run kafka/leader get-admin-credentials 
+        echo "bootstrap-server=my-test" >> $GITHUB_OUTPUT
