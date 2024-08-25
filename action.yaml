@@ -25,6 +25,12 @@ outputs:
   bootstrap-server:
     description: Address for the bootstrap server to be used
     value: ${{ steps.outputs.outputs.bootstrap-server }}
+  username:
+    description: Admin user created in the Kafka cluster for external use
+    value: ${{ steps.outputs.outputs.username }}
+  password:
+    description: Password for the admin user
+    value: ${{ steps.outputs.outputs.password }}
 
 runs:
   using: composite
