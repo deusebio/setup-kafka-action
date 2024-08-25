@@ -39,7 +39,7 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: 🏗 Checkout Kafka kraft repo
+    - name: Checkout repository
       uses: actions/checkout@v4
       with:
         repository: deusebio/setup-kafka-action

@@ -34,7 +34,7 @@ jobs:
         with:
           zookeeper-units: 3
 
-      - name: Check metadata
+      - name: Show Juju status
         run: |
           juju status
 
