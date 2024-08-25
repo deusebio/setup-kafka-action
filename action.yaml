@@ -50,6 +50,7 @@ runs:
       run: |
         juju add-model kafka
         juju deploy ./resources/bundle.yaml
+        juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")'
 
     - name: Fetch metadata
       id: get-metadata
