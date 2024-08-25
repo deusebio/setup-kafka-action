@@ -24,7 +24,7 @@ inputs:
 outputs:
   bootstrap-server:
     description: Address for the bootstrap server to be used
-    value: ${{ steps.get-metadata.outputs.bootstrap-server }}
+    value: ${{ steps.outputs.outputs.bootstrap-server }}
 
 runs:
   using: composite
@@ -53,12 +53,12 @@ runs:
         juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")'
         juju wait-for application admin --query='name=="admin" && (status=="active" || status=="idle")'
 
-    - name: Fetch metadata
-      id: get-metadata
+    - name: Fetch output variables
+      id: outputs
       shell: bash
       run: |
-        juju run admin/leader get-credentials --format yaml > metadata.yaml
-        cat metadata.yaml
-        echo "bootstrap-server=my-test" >> $GITHUB_OUTPUT
-        echo "username=$(yq '.username' metadata.yaml)" >> $GITHUB_OUTPUT
-        echo "password=$(yq '.password' metadata.yaml)" >> $GITHUB_OUTPUT
+        juju run admin/leader get-credentials --format yaml > outputs.yaml
+        cat outputs.yaml
+        echo "bootstrap-server=$(yq '.results.kafka.endpoints' outputs.yaml)" >> $GITHUB_OUTPUT
+        echo "username=$(yq '.results.kafka.username' outputs.yaml)" >> $GITHUB_OUTPUT
+        echo "password=$(yq '.results.kafka.password' outputs.yaml)" >> $GITHUB_OUTPUT

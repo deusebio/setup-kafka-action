@@ -34,4 +34,6 @@ jobs:
 
       - name: Check metadata
         run: |
-          echo ${{ steps.kafka.outputs.bootstrap-server }}
+          echo "Endpoint: ${{ steps.kafka.outputs.bootstrap-server }}"
+          echo "Username: ${{ steps.kafka.outputs.username }}"
+          echo "Password: ${{ steps.kafka.outputs.password }}"
