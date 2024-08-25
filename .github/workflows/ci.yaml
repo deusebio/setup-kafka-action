@@ -33,6 +33,7 @@ jobs:
         uses: deusebio/setup-kafka-action@dummy-implementation
         with:
           zookeeper-units: 3
+          broker-units: 3
 
       - name: Show Juju status
         run: |
