@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Setup Kafka
         id: kafka
-        uses: deusebio/setup-kafka-action
+        uses: deusebio/setup-kafka-action@main
 
       - name: Check metadata
         run: |
