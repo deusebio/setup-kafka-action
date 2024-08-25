@@ -20,6 +20,10 @@ inputs:
     description: Number of ZooKeeper servers to be used
     default: "1"
     required: false
+  user-roles:
+    description: Role for the user to be created
+    default: "admin"
+    required: false
 
 outputs:
   bootstrap-server:
@@ -42,7 +46,6 @@ runs:
         path: "kafka"
 
     - name: Setup operator environment
-      # TODO: Replace with custom image on self-hosted runner
       uses: charmed-kubernetes/actions-operator@main
       with:
         provider: lxd
@@ -54,16 +57,27 @@ runs:
       working-directory: "kafka"
       shell: bash
       run: |
+        pip install jinja2-cli
+
         juju add-model kafka
-        juju deploy ./resources/bundle.yaml
+
+        jinja2 \
+          -D num_brokers={{ inputs.broker-units }} \
+          -D num_zk_servers={{ inputs.zookeeper-units }} \
+          -D user_roles={{ user-roles }} \
+          ./resources/bundle.yaml.j2 > bundle.yaml
+
+        cat bundle.yaml
+
+        juju deploy ./bundle.yaml
         juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")'
-        juju wait-for application admin --query='name=="admin" && (status=="active" || status=="idle")'
+        juju wait-for application user --query='name=="user" && (status=="active" || status=="idle")'
 
     - name: Fetch output variables
       id: outputs
       shell: bash
       run: |
-        juju run admin/leader get-credentials --format plain > outputs.yaml
+        juju run user/leader get-credentials --format plain > outputs.yaml
         cat outputs.yaml
         echo "bootstrap-server=$(yq '.kafka.endpoints' outputs.yaml)" >> $GITHUB_OUTPUT
         echo "username=$(yq '.kafka.username' outputs.yaml)" >> $GITHUB_OUTPUT
