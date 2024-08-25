@@ -1,3 +1,8 @@
+# Copyright 2024 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# Usage documentation: build_charm.md
+---
 name: "Charmed Kafka Setup"
 description: "Creates a Kafka deployment for integration testing"
 author: "Canonical"
@@ -49,5 +54,5 @@ runs:
       id: get-metadata
       shell: bash
       run: |
-        juju run kafka/leader get-admin-credentials 
+        juju run kafka/leader get-admin-credentials
         echo "bootstrap-server=my-test" >> $GITHUB_OUTPUT
