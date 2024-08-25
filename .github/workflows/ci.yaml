@@ -31,6 +31,8 @@ jobs:
       - name: Setup Kafka
         id: kafka
         uses: deusebio/setup-kafka-action@dummy-implementation
+        with:
+          zookeeper_units: 3
 
       - name: Check metadata
         run: |
