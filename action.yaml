@@ -57,8 +57,8 @@ runs:
       id: outputs
       shell: bash
       run: |
-        juju run admin/leader get-credentials --format yaml > outputs.yaml
+        juju run admin/leader get-credentials --format plain > outputs.yaml
         cat outputs.yaml
-        echo "bootstrap-server=$(yq '.results.kafka.endpoints' outputs.yaml)" >> $GITHUB_OUTPUT
-        echo "username=$(yq '.results.kafka.username' outputs.yaml)" >> $GITHUB_OUTPUT
-        echo "password=$(yq '.results.kafka.password' outputs.yaml)" >> $GITHUB_OUTPUT
+        echo "bootstrap-server=$(yq '.kafka.endpoints' outputs.yaml)" >> $GITHUB_OUTPUT
+        echo "username=$(yq '.kafka.username' outputs.yaml)" >> $GITHUB_OUTPUT
+        echo "password=$(yq '.kafka.password' outputs.yaml)" >> $GITHUB_OUTPUT
