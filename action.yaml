@@ -61,11 +61,12 @@ runs:
 
         juju add-model kafka
 
-        jinja2 \
+        echo jinja2 \
           -D num_brokers={{ inputs.broker-units }} \
           -D num_zk_servers={{ inputs.zookeeper-units }} \
           -D user_roles={{ inputs.user-roles }} \
-          ./resources/bundle.yaml.j2 > bundle.yaml
+          ./resources/bundle.yaml.j2 
+        # > bundle.yaml
 
         cat bundle.yaml
 
