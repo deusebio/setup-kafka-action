@@ -49,8 +49,8 @@ runs:
       uses: charmed-kubernetes/actions-operator@main
       with:
         provider: lxd
-        juju-channel: 3.4/stable
-        bootstrap-options: "--agent-version 3.4.2"
+        juju-channel: 3.5/stable
+        bootstrap-options: "--agent-version 3.5.3"
 
     - name: Deploy Kafka
       id: deploy
@@ -70,8 +70,8 @@ runs:
         cat bundle.yaml
 
         juju deploy ./bundle.yaml
-        juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")'
-        juju wait-for application user --query='name=="user" && (status=="active" || status=="idle")'
+        juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")' --timeout 30m0s
+        juju wait-for application user --query='name=="user" && (status=="active" || status=="idle")' --timeout 30m0s
 
     - name: Fetch output variables
       id: outputs
