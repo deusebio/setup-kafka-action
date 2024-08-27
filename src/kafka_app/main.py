@@ -4,6 +4,8 @@ from kafka.admin import NewTopic
 from kafka.errors import TopicAlreadyExistsError
 import os
 
+import time
+
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from kafka_app.core import KafkaClient
@@ -12,6 +14,7 @@ import typer
 import uuid
 
 app = typer.Typer()
+logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +37,7 @@ def producer(
 
     topic_config = NewTopic(
         name=topic_name,
-        num_partitions=1, replication_factor=3
+        num_partitions=5, replication_factor=1
     )
 
     logger.info(f"Creating new topic - {topic_name}")
@@ -46,10 +49,12 @@ def producer(
 
     logger.info("Producer - Starting...")
     for ith in range(num_messages):
+        logger.info(f"Process {process_id} producing message with seq number {ith}")
         message = f"{process_id}-{ith}"
         client.produce_message(
             topic_name=topic_name, message_content=message.encode("utf-8")
         )
+        time.sleep(1.0)
 
 @app.command()
 def consumer(
