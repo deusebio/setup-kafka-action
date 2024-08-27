@@ -6,6 +6,8 @@ import os
 
 import time
 
+import pandas as pd
+
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from kafka_app.core import KafkaClient
@@ -94,6 +96,30 @@ def consumer(
             except DuplicateKeyError:
                 logger.error(f"Duplicated key with id: {content['_id']}")
 
+
+@app.command()
+def report(
+    topic_name: str, mongo_uri: str, fields: str = "destination",
+    output: str | None = None
+):
+    fields_lst = [field.strip() for field in fields.split(",")]
+
+    keys = {name: f"${name}" for name in fields_lst}
+
+    mongo_client = MongoClient(mongo_uri)
+    collection = mongo_client[topic_name].get_collection("consumer")
+
+    items = collection.aggregate([
+        {"$group": {"_id": keys, "count": {"$sum": 1}}}
+    ])
+
+    df = pd.DataFrame([
+        item["_id"] | {key: item[key] for key in item if key != "_id"}
+        for item in items
+    ]).set_index(fields_lst)
+
+    if output:
+        df.to_csv(output)
 
 if __name__ == "__main__":
     app()
