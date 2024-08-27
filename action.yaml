@@ -51,6 +51,7 @@ runs:
         path: "kafka"
 
     - name: Setup operator environment
+      if:  ${{ env.CONTROLLER_NAME == '' }}
       uses: charmed-kubernetes/actions-operator@main
       with:
         provider: lxd
