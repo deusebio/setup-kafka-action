@@ -24,6 +24,11 @@ inputs:
     description: Role for the user to be created
     default: "admin"
     required: false
+  model:
+    description: Name of the Juju model where to deploy the cluster
+    default: "kafka"
+    required: false
+
 
 outputs:
   bootstrap-server:
@@ -59,7 +64,7 @@ runs:
       run: |
         pip install jinja2-cli
 
-        juju add-model kafka
+        juju add-model ${{ inputs.model }}
 
         jinja2 \
           -D num_brokers=${{ inputs.broker-units }} \

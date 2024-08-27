@@ -44,3 +44,15 @@ jobs:
           echo "Endpoint: ${{ steps.kafka.outputs.bootstrap-server }}"
           echo "Username: ${{ steps.kafka.outputs.username }}"
           echo "Password: ${{ steps.kafka.outputs.password }}"
+
+      - name: Setup Kafka (2)
+        id: kafka-2
+        uses: deusebio/setup-kafka-action@dummy-implementation
+        with:
+          model: "kafka-2"
+
+      - name: Check metadata (2)
+        run: |
+          echo "Endpoint: ${{ steps.kafka-2.outputs.bootstrap-server }}"
+          echo "Username: ${{ steps.kafka-2.outputs.username }}"
+          echo "Password: ${{ steps.kafka-2.outputs.password }}"
