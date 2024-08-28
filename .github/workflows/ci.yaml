@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Setup Kafka
         id: kafka
-        uses: /action.yml
+        uses: ./action.yaml
         with:
           zookeeper-units: 3
           broker-units: 3
