@@ -28,31 +28,34 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Setup Kafka
-        id: kafka
-        uses: ${{ github.event.repository.name }}@${{ github.event.repository.head_ref }} # deusebio/setup-kafka-action@dummy-implementation
-        with:
-          zookeeper-units: 3
-          broker-units: 3
-
-      - name: Show Juju status
-        run: |
-          juju status
-
-      - name: Check metadata
-        run: |
-          echo "Endpoint: ${{ steps.kafka.outputs.bootstrap-server }}"
-          echo "Username: ${{ steps.kafka.outputs.username }}"
-          echo "Password: ${{ steps.kafka.outputs.password }}"
-
-      - name: Setup Kafka (2)
-        id: kafka-2
-        uses: deusebio/setup-kafka-action@dummy-implementation
-        with:
-          model: "kafka-2"
-
-      - name: Check metadata (2)
-        run: |
-          echo "Endpoint: ${{ steps.kafka-2.outputs.bootstrap-server }}"
-          echo "Username: ${{ steps.kafka-2.outputs.username }}"
-          echo "Password: ${{ steps.kafka-2.outputs.password }}"
+      - name: Debug
+        run:
+          echo ${{ github.event.repository.name }}@${{ github.event.repository.head_ref }}
+      # - name: Setup Kafka
+      #   id: kafka
+      #   uses: deusebio/setup-kafka-action@dummy-implementation
+      #   with:
+      #     zookeeper-units: 3
+      #     broker-units: 3
+      #
+      # - name: Show Juju status
+      #   run: |
+      #     juju status
+      #
+      # - name: Check metadata
+      #   run: |
+      #     echo "Endpoint: ${{ steps.kafka.outputs.bootstrap-server }}"
+      #     echo "Username: ${{ steps.kafka.outputs.username }}"
+      #     echo "Password: ${{ steps.kafka.outputs.password }}"
+      #
+      # - name: Setup Kafka (2)
+      #   id: kafka-2
+      #   uses: deusebio/setup-kafka-action@dummy-implementation
+      #   with:
+      #     model: "kafka-2"
+      #
+      # - name: Check metadata (2)
+      #   run: |
+      #     echo "Endpoint: ${{ steps.kafka-2.outputs.bootstrap-server }}"
+      #     echo "Username: ${{ steps.kafka-2.outputs.username }}"
+      #     echo "Password: ${{ steps.kafka-2.outputs.password }}"
