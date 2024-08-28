@@ -49,14 +49,11 @@ runs:
   using: composite
   steps:
     - name: Debug
+      id: reference
       shell: bash
       run: |
-        ls 
-        
-        echo "action_ref: $GH_ACTION_REPOSITORY"
-        echo "action_repository: $GH_ACTION_REF"
-        # cd kafka    
-        # git status
+        echo "action_repository=$GH_ACTION_REPOSITORY" >> $GITHUB_OUTPUT
+        echo "action_ref=$GH_ACTION_REF" >> $GITHUB_OUTPUT
       env:
         GH_ACTION_REPOSITORY: ${{ github.action_repository || github.repository }}
         GH_ACTION_REF: ${{ github.action_ref || github.ref_name }}
@@ -64,9 +61,9 @@ runs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        repository: ${{ github.action_repository }}
+        repository: ${{ steps.reference.outputs.action_repository }}
         path: "kafka"
-        ref: ${{ github.action_ref }}
+        ref: ${{ steps.reference.outputs.action_repository }}
 
     - name: Setup operator environment
       if:  ${{ env.CONTROLLER_NAME == '' }}
