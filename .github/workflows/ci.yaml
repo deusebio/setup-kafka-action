@@ -1,0 +1,63 @@
+# Copyright 2022 Canonical Ltd.
+# See LICENSE file for licensing details.
+name: Tests
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+  workflow_call:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install yamllint
+        run: python3 -m pip install yamllint
+      - name: YAML Lint
+        run:  |
+          yamllint -d "{extends: relaxed, rules: {line-length: {max: 250}}}" \
+            --no-warnings action.yaml
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: setup-kafka-action
+
+      - name: Setup Kafka
+        id: kafka
+        uses: ./setup-kafka-action
+        with:
+          zookeeper-units: 3
+          broker-units: 3
+
+      - name: Show Juju status
+        run: |
+          juju status
+
+      - name: Check metadata
+        run: |
+          echo "Endpoint: ${{ steps.kafka.outputs.bootstrap-server }}"
+          echo "Username: ${{ steps.kafka.outputs.username }}"
+          echo "Password: ${{ steps.kafka.outputs.password }}"
+
+      - name: Setup Kafka (2)
+        id: kafka-2
+        uses: ./setup-kafka-action
+        with:
+          model: "kafka-2"
+
+      - name: Check metadata (2)
+        run: |
+          echo "Endpoint: ${{ steps.kafka-2.outputs.bootstrap-server }}"
+          echo "Username: ${{ steps.kafka-2.outputs.username }}"
+          echo "Password: ${{ steps.kafka-2.outputs.password }}"

@@ -1,0 +1,89 @@
+# Copyright 2024 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# Usage documentation: build_charm.md
+---
+name: "Charmed Kafka Setup"
+description: "Creates a Kafka deployment for integration testing"
+author: "Canonical"
+
+branding:
+  icon: "alert-circle"
+  color: "purple"
+
+inputs:
+  broker-units:
+    description: Number of Kafka broker to be used
+    default: "1"
+    required: false
+  zookeeper-units:
+    description: Number of ZooKeeper servers to be used
+    default: "1"
+    required: false
+  topic:
+    description: Name for the requested topic
+    default: "test-topic"
+    required: false
+  user-roles:
+    description: Role for the user to be created
+    default: "admin"
+    required: false
+  model:
+    description: Name of the Juju model where to deploy the cluster
+    default: "kafka"
+    required: false
+
+
+outputs:
+  bootstrap-server:
+    description: Address for the bootstrap server to be used
+    value: ${{ steps.outputs.outputs.bootstrap-server }}
+  username:
+    description: Admin user created in the Kafka cluster for external use
+    value: ${{ steps.outputs.outputs.username }}
+  password:
+    description: Password for the admin user
+    value: ${{ steps.outputs.outputs.password }}
+
+runs:
+  using: composite
+  steps:
+
+    - name: Setup operator environment
+      if:  ${{ env.CONTROLLER_NAME == '' }}
+      uses: charmed-kubernetes/actions-operator@main
+      with:
+        provider: lxd
+        juju-channel: 3.5/stable
+        bootstrap-options: "--agent-version 3.5.3"
+
+    - name: Deploy Kafka
+      id: deploy
+      shell: bash
+      run: |
+        pip install jinja2-cli
+
+        juju add-model ${{ inputs.model }}
+
+        cd ${{ github.action_path }}
+
+        jinja2 \
+          -D num_brokers=${{ inputs.broker-units }} \
+          -D num_zk_servers=${{ inputs.zookeeper-units }} \
+          -D user_roles=${{ inputs.user-roles }} \
+          -D topic_name=${{ inputs.topic }} \
+          ./resources/bundle.yaml.j2 > bundle.yaml
+
+        juju deploy ./bundle.yaml
+        juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")' --timeout 30m0s
+        juju wait-for application user --query='name=="user" && (status=="active" || status=="idle")' --timeout 30m0s
+
+    - name: Fetch output variables
+      id: outputs
+      shell: bash
+      run: |
+        juju run user/leader get-credentials --format plain > outputs.yaml
+        cat outputs.yaml
+        echo "bootstrap-server=$(yq '.kafka.endpoints' outputs.yaml)" >> $GITHUB_OUTPUT
+        echo "username=$(yq '.kafka.username' outputs.yaml)" >> $GITHUB_OUTPUT
+        echo "password=$(yq '.kafka.password' outputs.yaml)" >> $GITHUB_OUTPUT
