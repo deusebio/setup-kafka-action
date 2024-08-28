@@ -33,7 +33,7 @@ jobs:
 
       - name: Setup Kafka
         id: kafka
-        uses: ./action.yaml
+        uses: .
         with:
           zookeeper-units: 3
           broker-units: 3
