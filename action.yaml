@@ -55,6 +55,13 @@ runs:
         path: "kafka"
         ref: "dummy-implementation"
 
+    - name: Debug
+      shell: bash
+      run: |
+        ls
+        
+        git status
+
     - name: Setup operator environment
       if:  ${{ env.CONTROLLER_NAME == '' }}
       uses: charmed-kubernetes/actions-operator@main
