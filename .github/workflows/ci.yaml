@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Debug
         run:
-          echo ${{ github.event.repository.name }}@${{ github.event.repository.head_ref }}
+          echo ${{ github.repository }}@${{ github.head_ref }}
       # - name: Setup Kafka
       #   id: kafka
       #   uses: deusebio/setup-kafka-action@dummy-implementation
