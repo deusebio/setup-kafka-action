@@ -30,10 +30,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          path: "kafka"
 
       - name: Setup Kafka
         id: kafka
-        uses: .
+        uses: ./kafka
         with:
           zookeeper-units: 3
           broker-units: 3
