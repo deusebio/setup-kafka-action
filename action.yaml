@@ -55,12 +55,12 @@ runs:
     #     path: "kafka"
     #     ref: "dummy-implementation"
 
-    # - name: Debug
-    #   shell: bash
-    #   run: |
-    #     cd kafka
-    #
-    #     git status
+    - name: Debug
+      shell: bash
+      run: |
+        ls 
+        # cd kafka    
+        # git status
     #
     - name: Setup operator environment
       if:  ${{ env.CONTROLLER_NAME == '' }}
