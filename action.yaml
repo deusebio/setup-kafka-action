@@ -75,7 +75,7 @@ runs:
 
     - name: Deploy Kafka
       id: deploy
-      working-directory: "kafka"
+      # working-directory: "kafka"
       shell: bash
       run: |
         pip install jinja2-cli
