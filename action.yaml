@@ -53,6 +53,7 @@ runs:
       with:
       #   repository: deusebio/setup-kafka-action
         path: "kafka"
+        ref: "dummy-implementation"
 
     - name: Setup operator environment
       if:  ${{ env.CONTROLLER_NAME == '' }}
