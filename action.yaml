@@ -63,7 +63,7 @@ runs:
       with:
         repository: ${{ steps.reference.outputs.action_repository }}
         path: "kafka"
-        ref: ${{ steps.reference.outputs.action_repository }}
+        ref: ${{ steps.reference.outputs.action_ref }}
 
     - name: Setup operator environment
       if:  ${{ env.CONTROLLER_NAME == '' }}
