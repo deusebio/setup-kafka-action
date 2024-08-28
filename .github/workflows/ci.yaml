@@ -31,11 +31,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          path: "kafka"
+          path: setup-kafka-action
 
       - name: Setup Kafka
         id: kafka
-        uses: ./kafka
+        uses: ./setup-kafka-action
         with:
           zookeeper-units: 3
           broker-units: 3
@@ -52,7 +52,7 @@ jobs:
 
       - name: Setup Kafka (2)
         id: kafka-2
-        uses: deusebio/setup-kafka-action@dummy-implementation
+        uses: ./setup-kafka-action
         with:
           model: "kafka-2"
 
