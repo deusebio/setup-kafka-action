@@ -48,22 +48,22 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Debug
-      id: reference
-      shell: bash
-      run: |
-        echo "action_repository=$GH_ACTION_REPOSITORY" >> $GITHUB_OUTPUT
-        echo "action_ref=$GH_ACTION_REF" >> $GITHUB_OUTPUT
-      env:
-        GH_ACTION_REPOSITORY: ${{ github.action_repository || github.repository }}
-        GH_ACTION_REF: ${{ github.action_ref || github.ref_name }}
-
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        repository: ${{ steps.reference.outputs.action_repository }}
-        path: "kafka"
-        ref: ${{ steps.reference.outputs.action_ref }}
+    # - name: Debug
+    #   id: reference
+    #   shell: bash
+    #   run: |
+    #     echo "action_repository=$GH_ACTION_REPOSITORY" >> $GITHUB_OUTPUT
+    #     echo "action_ref=$GH_ACTION_REF" >> $GITHUB_OUTPUT
+    #   env:
+    #     GH_ACTION_REPOSITORY: ${{ github.action_repository || github.repository }}
+    #     GH_ACTION_REF: ${{ github.action_ref || github.ref_name }}
+    #
+    # - name: Checkout repository
+    #   uses: actions/checkout@v4
+    #   with:
+    #     repository: ${{ steps.reference.outputs.action_repository }}
+    #     path: "kafka"
+    #     ref: ${{ steps.reference.outputs.action_ref }}
 
     - name: Setup operator environment
       if:  ${{ env.CONTROLLER_NAME == '' }}
@@ -81,6 +81,8 @@ runs:
         pip install jinja2-cli
 
         juju add-model ${{ inputs.model }}
+
+        cd ${{ github.action_path }}
 
         jinja2 \
           -D num_brokers=${{ inputs.broker-units }} \
