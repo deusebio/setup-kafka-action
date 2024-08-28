@@ -59,7 +59,7 @@ runs:
       shell: bash
       run: |
         cd kafka
-        
+
         git status
 
     - name: Setup operator environment
