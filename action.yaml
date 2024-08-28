@@ -51,9 +51,9 @@ runs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        #   repository: deusebio/setup-kafka-action
+        repository: deusebio/setup-kafka-action
         path: "kafka"
-        # ref: "dummy-implementation"
+        ref: "dummy-implementation"
 
     - name: Debug
       shell: bash
