@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Setup Kafka
         id: kafka
-        uses: deusebio/setup-kafka-action@dummy-implementation
+        uses: ${{ github.event.repository.name }} # deusebio/setup-kafka-action@dummy-implementation
         with:
           zookeeper-units: 3
           broker-units: 3
