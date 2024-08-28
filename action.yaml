@@ -48,20 +48,20 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        repository: deusebio/setup-kafka-action
-        path: "kafka"
-        ref: "dummy-implementation"
+    # - name: Checkout repository
+    #   uses: actions/checkout@v4
+    #   with:
+    #     repository: deusebio/setup-kafka-action
+    #     path: "kafka"
+    #     ref: "dummy-implementation"
 
-    - name: Debug
-      shell: bash
-      run: |
-        cd kafka
-
-        git status
-
+    # - name: Debug
+    #   shell: bash
+    #   run: |
+    #     cd kafka
+    #
+    #     git status
+    #
     - name: Setup operator environment
       if:  ${{ env.CONTROLLER_NAME == '' }}
       uses: charmed-kubernetes/actions-operator@main
@@ -72,7 +72,7 @@ runs:
 
     - name: Deploy Kafka
       id: deploy
-      working-directory: "kafka"
+      # working-directory: "kafka"
       shell: bash
       run: |
         pip install jinja2-cli
