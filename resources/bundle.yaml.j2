@@ -20,7 +20,7 @@ applications:
     options:
       consumer-group-prefix: cg
       extra-user-roles: {{ user_roles }}
-      topic-name: test-topic
+      topic-name: {{ topic_name }}
 
 description: A fast, secure and fault-tolerant Apache Kafka, supported by Apache ZooKeeper
 issues: https://github.com/canonical/kafka-bundle/issues/new

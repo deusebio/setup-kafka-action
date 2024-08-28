@@ -20,6 +20,10 @@ inputs:
     description: Number of ZooKeeper servers to be used
     default: "1"
     required: false
+  topic:
+    description: Name for the requested topic
+    default: "test-topic"
+    required: false
   user-roles:
     description: Role for the user to be created
     default: "admin"
@@ -71,9 +75,8 @@ runs:
           -D num_brokers=${{ inputs.broker-units }} \
           -D num_zk_servers=${{ inputs.zookeeper-units }} \
           -D user_roles=${{ inputs.user-roles }} \
+          -D topic_name=${{ inputs.topic }} \
           ./resources/bundle.yaml.j2 > bundle.yaml
-
-        cat bundle.yaml
 
         juju deploy ./bundle.yaml
         juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")' --timeout 30m0s
