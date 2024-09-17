@@ -25,7 +25,7 @@ jobs:
           yamllint -d "{extends: relaxed, rules: {line-length: {max: 250}}}" \
             --no-warnings action.yaml
 
-  test:
+  no-tls:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -50,6 +50,8 @@ jobs:
           echo "Endpoint: ${{ steps.kafka.outputs.bootstrap-server }}"
           echo "Username: ${{ steps.kafka.outputs.username }}"
           echo "Password: ${{ steps.kafka.outputs.password }}"
+          echo "CA: ${{ steps.kafka.outputs.ca-certificate }}"
+
 
       - name: Setup Kafka (2)
         id: kafka-2
@@ -62,3 +64,33 @@ jobs:
           echo "Endpoint: ${{ steps.kafka-2.outputs.bootstrap-server }}"
           echo "Username: ${{ steps.kafka-2.outputs.username }}"
           echo "Password: ${{ steps.kafka-2.outputs.password }}"
+          echo "CA: ${{ steps.kafka.outputs.ca-certificate }}"
+
+
+  tls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: setup-kafka-action
+
+      - name: Setup Kafka TLS
+        id: kafka
+        uses: ./setup-kafka-action
+        with:
+          zookeeper-units: 1
+          broker-units: 1
+          encryption: true
+
+      - name: Show Juju status
+        run: |
+          juju status
+
+      - name: Check metadata
+        run: |
+          echo "Endpoint: ${{ steps.kafka.outputs.bootstrap-server }}"
+          echo "Username: ${{ steps.kafka.outputs.username }}"
+          echo "Password: ${{ steps.kafka.outputs.password }}"
+          echo "CA: ${{ steps.kafka.outputs.ca-certificate }}"
