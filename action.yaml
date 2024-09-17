@@ -28,6 +28,11 @@ inputs:
     description: Role for the user to be created
     default: "admin"
     required: false
+  substrate:
+    description: |
+      "Which substrate to use to deploy juju and charms. Options: lxd, microk8s"
+    default: lxd
+    required: false
   model:
     description: Name of the Juju model where to deploy the cluster
     default: "kafka"
@@ -50,10 +55,11 @@ runs:
   steps:
 
     - name: Setup operator environment
-      if:  ${{ env.CONTROLLER_NAME == '' }}
+      if: ${{ env.CONTROLLER_NAME == '' }}
       uses: charmed-kubernetes/actions-operator@main
       with:
-        provider: lxd
+        provider: ${{ inputs.substrate }}
+        channel: ${{ inputs.substrate == 'microk8s' &&  '1.30-strict/stable' || '' }}
         juju-channel: 3.5/stable
         bootstrap-options: "--agent-version 3.5.3"
 
@@ -67,12 +73,21 @@ runs:
 
         cd ${{ github.action_path }}
 
+        if [ ${{ inputs.substrate }} == "lxd" ];
+        then
+          BUNDLE_FILE="bundle.yaml.j2"
+        else
+          BUNDLE_FILE="bundle.k8s.yaml.j2"
+        fi
+
+        echo "Using template: ${BUNDLE_FILE}"
+
         jinja2 \
           -D num_brokers=${{ inputs.broker-units }} \
           -D num_zk_servers=${{ inputs.zookeeper-units }} \
           -D user_roles=${{ inputs.user-roles }} \
           -D topic_name=${{ inputs.topic }} \
-          ./resources/bundle.yaml.j2 > bundle.yaml
+          ./resources/$BUNDLE_FILE > bundle.yaml
 
         juju deploy ./bundle.yaml
         juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")' --timeout 30m0s
