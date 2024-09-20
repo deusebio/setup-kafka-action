@@ -28,6 +28,11 @@ inputs:
     description: Role for the user to be created
     default: "admin"
     required: false
+  encryption:
+    type: bool
+    description: Whether encryption shall be enabled
+    default: false
+    required: false
   model:
     description: Name of the Juju model where to deploy the cluster
     default: "kafka"
@@ -44,6 +49,9 @@ outputs:
   password:
     description: Password for the admin user
     value: ${{ steps.outputs.outputs.password }}
+  ca-certificate:
+    description: Certificate of the CA issuing the Kafka broker certificates
+    value: ${{ steps.outputs.outputs.ca-certificates }}
 
 runs:
   using: composite
@@ -67,12 +75,21 @@ runs:
 
         cd ${{ github.action_path }}
 
+        if [ ${{ inputs.encryption }} == "false" ];
+        then
+          BUNDLE_FILE="bundle.yaml.j2"
+        else
+          BUNDLE_FILE="bundle.tls.yaml.j2"
+        fi
+
+        echo "Using template: ${BUNDLE_FILE}"
+
         jinja2 \
           -D num_brokers=${{ inputs.broker-units }} \
           -D num_zk_servers=${{ inputs.zookeeper-units }} \
           -D user_roles=${{ inputs.user-roles }} \
           -D topic_name=${{ inputs.topic }} \
-          ./resources/bundle.yaml.j2 > bundle.yaml
+          ./resources/$BUNDLE_FILE > bundle.yaml
 
         juju deploy ./bundle.yaml
         juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")' --timeout 30m0s
@@ -87,3 +104,13 @@ runs:
         echo "bootstrap-server=$(yq '.kafka.endpoints' outputs.yaml)" >> $GITHUB_OUTPUT
         echo "username=$(yq '.kafka.username' outputs.yaml)" >> $GITHUB_OUTPUT
         echo "password=$(yq '.kafka.password' outputs.yaml)" >> $GITHUB_OUTPUT
+
+        if [ ${{ inputs.encryption }} == "true" ];
+        then
+          juju run tls/0 get-ca-certificate --format plain > outputs.yaml
+          CA=$(yq '.ca-certificate' outputs.yaml | awk -v ORS='\\n' '1')
+          echo "ca-certificate=\"${CA}\""
+          echo "ca-certificate=\"${CA}\"" >> $GITHUB_OUTPUT
+        else
+          echo "ca-certificate=\"\"" >> $GITHUB_OUTPUT
+        fi
