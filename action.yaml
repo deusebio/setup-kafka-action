@@ -77,14 +77,16 @@ runs:
 
         if [ ${{ inputs.encryption }} == "false" ];
         then
-          BUNDLE_FILE="bundle.yaml.j2"
+          ENCRYPTION=""
         else
-          BUNDLE_FILE="bundle.tls.yaml.j2"
+          ENCRYPTION="true"
         fi
 
+        BUNDLE_FILE="bundle.yaml.j2"
         echo "Using template: ${BUNDLE_FILE}"
 
         jinja2 \
+          -D tls=${ENCRYPTION} \
           -D num_brokers=${{ inputs.broker-units }} \
           -D num_zk_servers=${{ inputs.zookeeper-units }} \
           -D user_roles=${{ inputs.user-roles }} \
