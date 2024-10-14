@@ -122,7 +122,7 @@ runs:
         echo "bootstrap-server=$(yq '.kafka.endpoints' outputs.yaml)" >> $GITHUB_OUTPUT
         echo "username=$(yq '.kafka.username' outputs.yaml)" >> $GITHUB_OUTPUT
         echo "password=$(yq '.kafka.password' outputs.yaml)" >> $GITHUB_OUTPUT
-    
+
         if [ ${{ inputs.encryption }} == "true" ];
         then
           juju run tls/0 get-ca-certificate --format plain > outputs.yaml
