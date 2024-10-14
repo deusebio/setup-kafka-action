@@ -97,6 +97,8 @@ runs:
 
         echo "Using template: ${BUNDLE_FILE}"
 
+        cat ./resources/$BUNDLE_FILE 
+
         jinja2 \
           -D tls=${ENCRYPTION} \
           -D num_brokers=${{ inputs.broker-units }} \
