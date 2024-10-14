@@ -107,8 +107,6 @@ runs:
           -D topic_name=${{ inputs.topic }} \
           ./resources/$BUNDLE_FILE > bundle.yaml
 
-        cat bundle.yaml
-
         juju deploy ./bundle.yaml
         juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")' --timeout 30m0s
         juju wait-for application user --query='name=="user" && (status=="active" || status=="idle")' --timeout 30m0s
