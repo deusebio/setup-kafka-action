@@ -105,6 +105,16 @@ runs:
           -D topic_name=${{ inputs.topic }} \
           ./resources/$BUNDLE_FILE > bundle.yaml
 
+        echo jinja2 \
+          -D tls=${ENCRYPTION} \
+          -D num_brokers=${{ inputs.broker-units }} \
+          -D num_zk_servers=${{ inputs.zookeeper-units }} \
+          -D user_roles=${{ inputs.user-roles }} \
+          -D topic_name=${{ inputs.topic }} \
+          ./resources/$BUNDLE_FILE > bundle.yaml
+
+        cat bundle.yaml
+
         juju deploy ./bundle.yaml
         juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")' --timeout 30m0s
         juju wait-for application user --query='name=="user" && (status=="active" || status=="idle")' --timeout 30m0s
