@@ -114,7 +114,7 @@ runs:
           -D user_roles=${{ inputs.user-roles }} \
           -D topic_name=${{ inputs.topic }} \
           ./resources/$BUNDLE_FILE
-        
+
         echo "Here"
         cat bundle.yaml
 
