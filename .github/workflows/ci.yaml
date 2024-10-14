@@ -36,11 +36,13 @@ jobs:
           - lxd
           - microk8s
         case:
-          - brokers: 1
+          - name: "small"
+            brokers: 1
             zk_servers: 1
-          - brokers: 3
+          - name: "large"
+            brokers: 3
             zk_servers: 3
-    name: ${{ matrix.tox-environment }}_${{ matrix.juju.agent || matrix.juju.snap_channel }}
+    name: ${{ matrix.case.name }}_${{ matrix.substrate }}_${{ matrix.encryption }}
     needs:
       - lint
     runs-on: ubuntu-22.04
