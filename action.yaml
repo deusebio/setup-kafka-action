@@ -77,7 +77,7 @@ runs:
       run: |
         pip install jinja2-cli
 
-        juju add-model ${{ inputs.model }}
+        # juju add-model ${{ inputs.model }}
 
         cd ${{ github.action_path }}
 
@@ -115,6 +115,7 @@ runs:
           -D topic_name=${{ inputs.topic }} \
           ./resources/$BUNDLE_FILE
         
+        echo "Here"
         cat bundle.yaml
 
         # juju deploy ./bundle.yaml
