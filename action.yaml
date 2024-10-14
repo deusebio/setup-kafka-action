@@ -83,7 +83,7 @@ runs:
 
         if [ ${{ inputs.encryption }} == "false" ];
         then
-          ENCRYPTION=""
+          ENCRYPTION="false"
         else
           ENCRYPTION="true"
         fi
