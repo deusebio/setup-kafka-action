@@ -80,7 +80,6 @@ jobs:
           echo "Password: ${{ steps.kafka.outputs.password }}"
           echo "CA: ${{ steps.kafka.outputs.ca-certificate }}"
 
-
   microk8s:
     runs-on: ubuntu-22.04
     timeout-minutes: 30
