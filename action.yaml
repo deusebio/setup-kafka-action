@@ -62,14 +62,14 @@ runs:
   using: composite
   steps:
 
-    - name: Setup operator environment
-      if: ${{ env.CONTROLLER_NAME == '' }}
-      uses: charmed-kubernetes/actions-operator@main
-      with:
-        provider: ${{ inputs.substrate }}
-        channel: ${{ inputs.substrate == 'microk8s' &&  '1.30-strict/stable' || '' }}
-        juju-channel: 3.5/stable
-        bootstrap-options: "--agent-version 3.5.3"
+    # - name: Setup operator environment
+    #   if: ${{ env.CONTROLLER_NAME == '' }}
+    #   uses: charmed-kubernetes/actions-operator@main
+    #   with:
+    #     provider: ${{ inputs.substrate }}
+    #     channel: ${{ inputs.substrate == 'microk8s' &&  '1.30-strict/stable' || '' }}
+    #     juju-channel: 3.5/stable
+    #     bootstrap-options: "--agent-version 3.5.3"
 
     - name: Deploy Kafka
       id: deploy
@@ -97,7 +97,7 @@ runs:
 
         echo "Using template: ${BUNDLE_FILE}"
 
-        cat ./resources/$BUNDLE_FILE 
+        cat ./resources/$BUNDLE_FILE
 
         jinja2 \
           -D tls=${ENCRYPTION} \
@@ -113,30 +113,30 @@ runs:
           -D num_zk_servers=${{ inputs.zookeeper-units }} \
           -D user_roles=${{ inputs.user-roles }} \
           -D topic_name=${{ inputs.topic }} \
-          ./resources/$BUNDLE_FILE > bundle.yaml
-
+          ./resources/$BUNDLE_FILE
+        
         cat bundle.yaml
 
-        juju deploy ./bundle.yaml
-        juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")' --timeout 30m0s
-        juju wait-for application user --query='name=="user" && (status=="active" || status=="idle")' --timeout 30m0s
+        # juju deploy ./bundle.yaml
+        # juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")' --timeout 30m0s
+        # juju wait-for application user --query='name=="user" && (status=="active" || status=="idle")' --timeout 30m0s
 
-    - name: Fetch output variables
-      id: outputs
-      shell: bash
-      run: |
-        juju run user/leader get-credentials --format plain > outputs.yaml
-        cat outputs.yaml
-        echo "bootstrap-server=$(yq '.kafka.endpoints' outputs.yaml)" >> $GITHUB_OUTPUT
-        echo "username=$(yq '.kafka.username' outputs.yaml)" >> $GITHUB_OUTPUT
-        echo "password=$(yq '.kafka.password' outputs.yaml)" >> $GITHUB_OUTPUT
-
-        if [ ${{ inputs.encryption }} == "true" ];
-        then
-          juju run tls/0 get-ca-certificate --format plain > outputs.yaml
-          CA=$(yq '.ca-certificate' outputs.yaml | awk -v ORS='\\n' '1')
-          echo "ca-certificate=\"${CA}\""
-          echo "ca-certificate=\"${CA}\"" >> $GITHUB_OUTPUT
-        else
-          echo "ca-certificate=\"\"" >> $GITHUB_OUTPUT
-        fi
+    # - name: Fetch output variables
+    #   id: outputs
+    #   shell: bash
+    #   run: |
+    #     juju run user/leader get-credentials --format plain > outputs.yaml
+    #     cat outputs.yaml
+    #     echo "bootstrap-server=$(yq '.kafka.endpoints' outputs.yaml)" >> $GITHUB_OUTPUT
+    #     echo "username=$(yq '.kafka.username' outputs.yaml)" >> $GITHUB_OUTPUT
+    #     echo "password=$(yq '.kafka.password' outputs.yaml)" >> $GITHUB_OUTPUT
+    #
+    #     if [ ${{ inputs.encryption }} == "true" ];
+    #     then
+    #       juju run tls/0 get-ca-certificate --format plain > outputs.yaml
+    #       CA=$(yq '.ca-certificate' outputs.yaml | awk -v ORS='\\n' '1')
+    #       echo "ca-certificate=\"${CA}\""
+    #       echo "ca-certificate=\"${CA}\"" >> $GITHUB_OUTPUT
+    #     else
+    #       echo "ca-certificate=\"\"" >> $GITHUB_OUTPUT
+    #     fi
