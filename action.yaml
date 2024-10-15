@@ -108,8 +108,8 @@ runs:
           ./resources/$BUNDLE_FILE > bundle.yaml
 
         juju deploy ./bundle.yaml
-        juju wait-for application kafka --query='name=="kafka" && (status=="active" && agent-status=="idle")' --timeout 30m0s
-        juju wait-for application user --query='name=="user" && (status=="active" && agent-status=="idle")' --timeout 30m0s
+        juju wait-for application kafka --timeout 30m0s
+        juju wait-for application user --timeout 30m0s
 
     - name: Fetch output variables
       id: outputs
