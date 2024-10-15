@@ -25,7 +25,26 @@ jobs:
           yamllint -d "{extends: relaxed, rules: {line-length: {max: 250}}}" \
             --no-warnings action.yaml
 
-  no-tls:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        encryption:
+          - true
+          - false
+        substrate:
+          - lxd
+          - microk8s
+        case:
+          - name: "small"
+            brokers: 1
+            zk_servers: 1
+          - name: "large"
+            brokers: 3
+            zk_servers: 3
+    name: ${{ matrix.case.name }}_${{ matrix.substrate }}_${{ matrix.encryption }}
+    needs:
+      - lint
     runs-on: ubuntu-22.04
     timeout-minutes: 30
     steps:
@@ -38,51 +57,10 @@ jobs:
         id: kafka
         uses: ./setup-kafka-action
         with:
-          zookeeper-units: 3
-          broker-units: 3
-
-      - name: Show Juju status
-        run: |
-          juju status
-
-      - name: Check metadata
-        run: |
-          echo "Endpoint: ${{ steps.kafka.outputs.bootstrap-server }}"
-          echo "Username: ${{ steps.kafka.outputs.username }}"
-          echo "Password: ${{ steps.kafka.outputs.password }}"
-          echo "CA: ${{ steps.kafka.outputs.ca-certificate }}"
-
-
-      - name: Setup Kafka (2)
-        id: kafka-2
-        uses: ./setup-kafka-action
-        with:
-          model: "kafka-2"
-
-      - name: Check metadata (2)
-        run: |
-          echo "Endpoint: ${{ steps.kafka-2.outputs.bootstrap-server }}"
-          echo "Username: ${{ steps.kafka-2.outputs.username }}"
-          echo "Password: ${{ steps.kafka-2.outputs.password }}"
-          echo "CA: ${{ steps.kafka.outputs.ca-certificate }}"
-
-
-  tls:
-    runs-on: ubuntu-22.04
-    timeout-minutes: 30
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          path: setup-kafka-action
-
-      - name: Setup Kafka TLS
-        id: kafka
-        uses: ./setup-kafka-action
-        with:
-          zookeeper-units: 1
-          broker-units: 1
-          encryption: true
+          zookeeper-units: ${{ matrix.case.zk_servers }}
+          broker-units: ${{ matrix.case.brokers }}
+          encryption: ${{ matrix.encryption }}
+          substrate: ${{ matrix.substrate }}
 
       - name: Show Juju status
         run: |

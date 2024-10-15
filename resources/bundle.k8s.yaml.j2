@@ -1,0 +1,49 @@
+applications:
+  kafka:
+    channel: 3/stable
+    charm: kafka-k8s
+    scale: {{ num_brokers }}
+    revision: 56
+    constraints: arch=amd64
+  zookeeper:
+    channel: 3/stable
+    charm: zookeeper-k8s
+    scale: {{ num_zk_servers }}
+    revision: 51
+    constraints: arch=amd64
+{%- if tls %}
+  tls:
+    channel: latest/stable
+    charm: self-signed-certificates
+    scale: 1
+    options:
+      ca-common-name: canonical
+    revision: 155
+    constraints: arch=amd64
+{%- endif %}
+  user:
+    channel: latest/stable
+    charm: data-integrator
+    scale: 1
+    revision: 41
+    constraints: arch=amd64
+    options:
+      consumer-group-prefix: cg
+      extra-user-roles: {{ user_roles }}
+      topic-name: {{ topic_name }}
+bundle: kubernetes
+description: A fast, secure and fault-tolerant Apache Kafka, supported by Apache ZooKeeper
+issues: https://github.com/canonical/kafka-k8s-bundle/issues/new
+name: kafka-k8s-bundle
+relations:
+- - kafka:zookeeper
+  - zookeeper:zookeeper
+{%- if tls +%}
+- - kafka:certificates
+  - tls:certificates
+- - zookeeper:certificates
+  - tls:certificates
+{%- endif %}
+- - user:kafka
+  - kafka:kafka-client
+source: https://github.com/canonical/kafka-k8s-bundle
