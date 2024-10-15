@@ -108,8 +108,8 @@ runs:
           ./resources/$BUNDLE_FILE > bundle.yaml
 
         juju deploy ./bundle.yaml
-        juju wait-for application kafka --query='name=="kafka" && (status=="active" || status=="idle")' --timeout 30m0s
-        juju wait-for application user --query='name=="user" && (status=="active" || status=="idle")' --timeout 30m0s
+        juju wait-for application kafka --query='name=="kafka" && (status=="active" && agent-status=="idle")' --timeout 30m0s
+        juju wait-for application user --query='name=="user" && (status=="active" && agent-status=="idle")' --timeout 30m0s
 
     - name: Fetch output variables
       id: outputs
@@ -124,6 +124,7 @@ runs:
         if [ ${{ inputs.encryption }} == "true" ];
         then
           juju run tls/0 get-ca-certificate --format plain > outputs.yaml
+          cat outputs.yaml
           CA=$(yq '.ca-certificate' outputs.yaml | awk -v ORS='\\n' '1')
           echo "ca-certificate=\"${CA}\""
           echo "ca-certificate=\"${CA}\"" >> $GITHUB_OUTPUT

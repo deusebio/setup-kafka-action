@@ -72,3 +72,10 @@ jobs:
           echo "Username: ${{ steps.kafka.outputs.username }}"
           echo "Password: ${{ steps.kafka.outputs.password }}"
           echo "CA: ${{ steps.kafka.outputs.ca-certificate }}"
+          
+          IFS=',' read -ra SERVERS  <<< "${{ steps.kafka.outputs.bootstrap-server }}"
+          
+          if [ ${#SERVERS[@]} != ${{ matrix.case.brokers }} ]
+          then
+            exit 1
+          fi
