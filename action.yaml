@@ -56,7 +56,7 @@ outputs:
     value: ${{ steps.outputs.outputs.password }}
   ca-certificate:
     description: Certificate of the CA issuing the Kafka broker certificates
-    value: ${{ steps.outputs.outputs.ca-certificates }}
+    value: ${{ steps.outputs.outputs.ca-certificate }}
 
 runs:
   using: composite
@@ -83,7 +83,7 @@ runs:
 
         if [ ${{ inputs.encryption }} == "false" ];
         then
-          ENCRYPTION="false"
+          ENCRYPTION=""
         else
           ENCRYPTION="true"
         fi
