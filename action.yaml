@@ -108,9 +108,9 @@ runs:
           ./resources/$BUNDLE_FILE > bundle.yaml
 
         juju deploy ./bundle.yaml
+        juju wait-for application user --query='forEach(units, unit => unit.agent-status=="idle" && unit.workload-status=="active")' --timeout 30m0s
         juju wait-for application zookeeper --query='forEach(units, unit => unit.agent-status=="idle" && unit.workload-status=="active")' --timeout 30m0s
         juju wait-for application kafka --query='forEach(units, unit => unit.agent-status=="idle" && unit.workload-status=="active")' --timeout 30m0s
-        juju wait-for application user --query='forEach(units, unit => unit.agent-status=="idle" && unit.workload-status=="active")' --timeout 30m0s
 
     - name: Fetch output variables
       id: outputs
