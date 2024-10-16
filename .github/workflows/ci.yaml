@@ -75,6 +75,7 @@ jobs:
           
           IFS=',' read -ra SERVERS  <<< "${{ steps.kafka.outputs.bootstrap-server }}"
           
+          echo "Servers: ⅛{SERVERS}"
           if [ ${#SERVERS[@]} != ${{ matrix.case.brokers }} ]
           then
             exit 1
